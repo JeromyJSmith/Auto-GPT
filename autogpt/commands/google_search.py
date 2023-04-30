@@ -30,9 +30,7 @@ def google_search(query: str, num_results: int = 8) -> str:
     if not results:
         return json.dumps(search_results)
 
-    for j in results:
-        search_results.append(j)
-
+    search_results.extend(iter(results))
     results = json.dumps(search_results, ensure_ascii=False, indent=4)
     return safe_google_results(results)
 
@@ -108,10 +106,8 @@ def safe_google_results(results: str | list) -> str:
     Returns:
         str: The results of the search.
     """
-    if isinstance(results, list):
-        safe_message = json.dumps(
-            [result.encode("utf-8", "ignore") for result in results]
-        )
-    else:
-        safe_message = results.encode("utf-8", "ignore").decode("utf-8")
-    return safe_message
+    return (
+        json.dumps([result.encode("utf-8", "ignore") for result in results])
+        if isinstance(results, list)
+        else results.encode("utf-8", "ignore").decode("utf-8")
+    )

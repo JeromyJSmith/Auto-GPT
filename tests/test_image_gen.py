@@ -63,43 +63,6 @@ class TestImageGen(unittest.TestCase):
         self.config.image_provider = "sd_webui"
         return
 
-        # Test using size 128
-        result = lst(generate_image_with_sd_webui("astronaut riding a horse", 128))
-        image_path = path_in_workspace(result)
-        self.assertTrue(image_path.exists())
-        with Image.open(image_path) as img:
-            self.assertEqual(img.size, (128, 128))
-        image_path.unlink()
-
-        # Test using size 64 and negative prompt
-        result = lst(
-            generate_image_with_sd_webui(
-                "astronaut riding a horse",
-                negative_prompt="horse",
-                size=64,
-                extra={"seed": 123},
-            )
-        )
-        image_path = path_in_workspace(result)
-        with Image.open(image_path) as img:
-            self.assertEqual(img.size, (64, 64))
-            neg_image_hash = hashlib.md5(img.tobytes()).hexdigest()
-        image_path.unlink()
-
-        # Same test as above but without the negative prompt
-        result = lst(
-            generate_image_with_sd_webui(
-                "astronaut riding a horse", image_size=64, size=1, extra={"seed": 123}
-            )
-        )
-        image_path = path_in_workspace(result)
-        with Image.open(image_path) as img:
-            self.assertEqual(img.size, (64, 64))
-            image_hash = hashlib.md5(img.tobytes()).hexdigest()
-        image_path.unlink()
-
-        self.assertNotEqual(image_hash, neg_image_hash)
-
 
 if __name__ == "__main__":
     unittest.main()

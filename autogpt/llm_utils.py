@@ -70,7 +70,6 @@ def create_chat_completion(
     Returns:
         str: The response from the chat completion
     """
-    num_retries = 10
     warned_user = False
     if CFG.debug_mode:
         print(
@@ -92,6 +91,7 @@ def create_chat_completion(
             if message is not None:
                 return message
     response = None
+    num_retries = 10
     for attempt in range(num_retries):
         backoff = 2 ** (attempt + 2)
         try:
@@ -137,8 +137,7 @@ def create_chat_completion(
         logger.typewriter_log(
             "FAILED TO GET RESPONSE FROM OPENAI",
             Fore.RED,
-            "Auto-GPT has failed to get a response from OpenAI's services. "
-            + f"Try running Auto-GPT again, and if the problem the persists try running it with `{Fore.CYAN}--debug{Fore.RESET}`.",
+            f"Auto-GPT has failed to get a response from OpenAI's services. Try running Auto-GPT again, and if the problem the persists try running it with `{Fore.CYAN}--debug{Fore.RESET}`.",
         )
         logger.double_check()
         if CFG.debug_mode:

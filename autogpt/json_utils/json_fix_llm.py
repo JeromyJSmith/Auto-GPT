@@ -178,12 +178,7 @@ def try_ai_fix(
     # Now try to fix this up using the ai_functions
     ai_fixed_json = auto_fix_json(json_to_load, JSON_SCHEMA)
 
-    if ai_fixed_json != "failed":
-        return json.loads(ai_fixed_json)
-    # This allows the AI to react to the error message,
-    #   which usually results in it correcting its ways.
-    # logger.error("Failed to fix AI output, telling the AI.")
-    return {}
+    return json.loads(ai_fixed_json) if ai_fixed_json != "failed" else {}
 
 
 def attempt_to_fix_json_by_finding_outermost_brackets(json_string: str):
@@ -196,19 +191,16 @@ def attempt_to_fix_json_by_finding_outermost_brackets(json_string: str):
 
     try:
         json_pattern = regex.compile(r"\{(?:[^{}]|(?R))*\}")
-        json_match = json_pattern.search(json_string)
-
-        if json_match:
-            # Extract the valid JSON object from the string
-            json_string = json_match.group(0)
-            logger.typewriter_log(
-                title="Apparently json was fixed.", title_color=Fore.GREEN
-            )
-            if CFG.speak_mode and CFG.debug_mode:
-                say_text("Apparently json was fixed.")
-        else:
+        if not (json_match := json_pattern.search(json_string)):
             return {}
 
+        # Extract the valid JSON object from the string
+        json_string = json_match.group(0)
+        logger.typewriter_log(
+            title="Apparently json was fixed.", title_color=Fore.GREEN
+        )
+        if CFG.speak_mode and CFG.debug_mode:
+            say_text("Apparently json was fixed.")
     except (json.JSONDecodeError, ValueError):
         if CFG.debug_mode:
             logger.error(f"Error: Invalid JSON: {json_string}\n")

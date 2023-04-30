@@ -127,9 +127,7 @@ class Agent:
                     flush=True,
                 )
                 while True:
-                    console_input = clean_input(
-                        Fore.MAGENTA + "Input:" + Style.RESET_ALL
-                    )
+                    console_input = clean_input(f"{Fore.MAGENTA}Input:{Style.RESET_ALL}")
                     if console_input.lower().strip() == "y":
                         user_input = "GENERATE NEXT COMMAND JSON"
                         break

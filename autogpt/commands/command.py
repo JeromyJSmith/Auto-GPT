@@ -32,9 +32,11 @@ class Command:
         self.disabled_reason = disabled_reason
 
     def __call__(self, *args, **kwargs) -> Any:
-        if not self.enabled:
-            return f"Command '{self.name}' is disabled: {self.disabled_reason}"
-        return self.method(*args, **kwargs)
+        return (
+            self.method(*args, **kwargs)
+            if self.enabled
+            else f"Command '{self.name}' is disabled: {self.disabled_reason}"
+        )
 
     def __str__(self) -> str:
         return f"{self.name}: {self.description}, args: {self.signature}"

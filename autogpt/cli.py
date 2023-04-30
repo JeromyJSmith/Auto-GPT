@@ -105,8 +105,7 @@ def main(
         logger.set_level(logging.DEBUG if cfg.debug_mode else logging.INFO)
         ai_name = ""
         if not cfg.skip_news:
-            motd = get_latest_bulletin()
-            if motd:
+            if motd := get_latest_bulletin():
                 logger.typewriter_log("NEWS: ", Fore.GREEN, motd)
             git_branch = get_current_git_branch()
             if git_branch and git_branch != "stable":

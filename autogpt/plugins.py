@@ -36,7 +36,7 @@ def inspect_zip_for_modules(zip_path: str, debug: bool = False) -> list[str]:
                 if debug:
                     print(f"Found module '{name}' in the zipfile at: {name}")
                 result.append(name)
-    if debug and len(result) == 0:
+    if debug and not result:
         print(f"Module '__init__.py' not found in the zipfile @ {zip_path}.")
     return result
 
@@ -152,13 +152,12 @@ def initialize_openai_plugins(
             os.chdir(openai_plugin_client_dir)
             Path("ai-plugin.json")
             if not os.path.exists("client"):
-                client_results = openapi_python_client.create_new_client(
+                if client_results := openapi_python_client.create_new_client(
                     url=manifest_spec["manifest"]["api"]["url"],
                     path=None,
                     meta=_meta_option,
                     config=_config,
-                )
-                if client_results:
+                ):
                     print(
                         f"Error creating OpenAPI client: {client_results[0].header} \n"
                         f" details: {client_results[0].detail}"
@@ -188,10 +187,10 @@ def instantiate_openai_plugin_clients(
           plugins (dict): per url dictionary of BaseOpenAIPlugin instances.
 
     """
-    plugins = {}
-    for url, manifest_spec_client in manifests_specs_clients.items():
-        plugins[url] = BaseOpenAIPlugin(manifest_spec_client)
-    return plugins
+    return {
+        url: BaseOpenAIPlugin(manifest_spec_client)
+        for url, manifest_spec_client in manifests_specs_clients.items()
+    }
 
 
 def scan_plugins(cfg: Config, debug: bool = False) -> List[AutoGPTPluginTemplate]:
